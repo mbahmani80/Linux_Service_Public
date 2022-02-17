@@ -1,2 +1,5 @@
 # Linux_Service_Public
-# Linux_Service_Public
+01_Install_initial_Config
+02_NTP_SSH_Server/CentOS8
+04_Storage_Server/NFS/CentOS/7
+18_Automation_Provisioning/Ansible/playbooks_bahmani/00_initial

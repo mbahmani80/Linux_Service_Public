@@ -1,0 +1,67 @@
+#***********************************************************************
+#          FILES:
+#                   04_01_ssh_srv_ok.yml 
+#
+#          USAGE:
+#		    ansible-playbook -i hosts 04_01_ssh_srv_ok.yml
+#
+#    DESCRIPTION: Ansible playbook print OS release inforamtion
+#
+#        OPTIONS: ---
+#   REQUIREMENTS: Python3
+#           BUGS: ---
+#         AUTHOR: Mahdi Bahmani (www.itstorage.ir)
+#   ORGANIZATION: merdasco
+#        CREATED: 2020/03/24 23:49
+#    LAST EDITED: 2020/11/14 00:20
+#       REVISION: 1.1
+#***********************************************************************
+---
+- hosts: allnew
+  become: yes
+  tasks:
+    - name: CentOS, Install openssh-server 
+      yum:
+        name:
+         - openssh-server
+       #state: latest 
+        state: present 
+      when:
+      - ansible_distribution == "CentOS"
+
+    - name: Debian/Ubuntu, Install openssh-server
+      apt:
+        name:
+          -  openssh-server
+        update_cache: false 
+        state: latest 
+        #state: present 
+      when:
+      - ansible_distribution == "Debian" or ansible_distribution == 'Ubuntu'
+
+    - name: Copy a new "sshd_config" file into place, backing up the original if it differs from the copied version
+      copy:
+        src: templates/sshd_config.j2 
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+
+    - name: Firewalld, Permit traffic in default zone on port 2212/tcp
+      shell: |
+       firewall-cmd --permanent --zone=public --add-port=2212/tcp
+       firewall-cmd --reload
+      when:
+       - ansible_distribution == "CentOS"
+
+    - name: UFW, Permit traffic in default zone on port 2212/tcp
+      shell: |
+       ufw allow 2212/tcp 
+      when:
+       - ansible_distribution == "Debian"
+
+    - name: systemctl restart sshd
+      shell: |
+          systemctl enable  sshd.service
+          systemctl restart sshd.service

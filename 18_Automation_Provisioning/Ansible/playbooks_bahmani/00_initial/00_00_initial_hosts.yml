@@ -1,0 +1,102 @@
+##***********************************************************************
+#          FILES:
+#                  01_03_mkdir_media_cdrom_ok.yml 
+#
+#          USAGE:
+#		    ansible-playbook -i hosts 01_03_mkdir_media_cdrom_ok.yml 
+#		  or
+#		    ansible-playbook -i hosts 01_03_mkdir_media_cdrom_ok.yml -b
+#
+#    DESCRIPTION: Ansible playbook print OS release inforamtion  
+#
+#        OPTIONS: ---
+#   REQUIREMENTS: Python3
+#           BUGS: ---
+#         AUTHOR: Mahdi Bahmani (www.itstorage.ir)
+#   ORGANIZATION: merdasco
+#        CREATED: 2020/03/24 23:49
+#    LAST EDITED: 2020/11/14 00:20
+#       REVISION: 1.1
+#***********************************************************************
+---
+- name: Initial Settings
+  hosts: allnew
+  #become: true
+  tasks: 
+    - name: CentOS Update bashrc file 
+      lineinfile: 
+            dest: /etc/bashrc
+            line: 'export HISTTIMEFORMAT="%d/%m/%y %T "'
+      when:
+       - ansible_distribution == "CentOS Linux" or ansible_distribution == "RedHat"
+
+    - name: Debian/Ubuntu, Update bashrc file 
+      lineinfile: 
+            dest: /etc/bash.bashrc
+            line: 'export HISTTIMEFORMAT="%d/%m/%y %T "'
+      when:
+       - ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
+
+    - name: Replace a rc.local entry with our own
+      replace:
+        path: /etc/rc.local
+        regexp: "\/bin\/sh -e"
+        replace: "\/bin\/bash"
+        owner: root
+        group: root
+        #mode: '0755'
+      when:
+       - ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
+
+    - name: enable service rc.local and ensure it is not masked
+      systemd:
+            name: rc.local 
+            enabled: yes
+            masked: no
+      when:
+       - ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"
+
+    - name: ansible create /media/cdrom directory with mode setting
+      file:
+        path: /media/cdrom
+        state: directory
+        mode: "u=rwx,g=rx,o=rx"
+    - name: ansible create /media/iso directory with mode setting
+      file:
+        path: /media/iso
+        state: directory
+        mode: "u=rwx,g=rx,o=rx"
+    - name: Ensure group "ssh" exists
+      group:
+        name:  ssh
+        state: present
+
+    - name: CentOS, Add the user 'sysadmin' with a bash shell, appending the group 'wheel,ssh' to the user's groups
+      user:
+        name: sysadmin 
+        comment: system admin user
+        shell: /bin/bash
+        uid: 1020
+        groups: wheel,ssh
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa
+      when:
+      - ansible_distribution == "CentOS"
+
+
+    - name: Debian, Add the user 'sysadmin' with a bash shell, appending the group 'sudo,ssh,adm' to the user's groups
+      user:
+        name: sysadmin 
+        comment: system admin user
+        shell: /bin/bash
+        uid: 1020
+        groups: sudo,ssh,adm 
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa
+      when:
+      - ansible_distribution == "Debian" or ansible_distribution == 'Ubuntu'
+

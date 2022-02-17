@@ -1,0 +1,4 @@
+[allnew]
+46.102.130.213:22
+[allnew:vars]
+ansible_python_interpreter=/usr/bin/python3

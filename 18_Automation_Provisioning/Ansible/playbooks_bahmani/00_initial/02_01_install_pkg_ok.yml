@@ -1,0 +1,38 @@
+---
+- name: Install all wanted PKGs
+  hosts: allnew 
+  become: yes
+  tasks:
+    - name: CentOS, Install a list of packages
+      yum:
+        name:
+         - nfs-utils
+         - firewalld
+       #state: latest 
+        state: installed 
+      when:
+      - ansible_distribution == "CentOS"
+
+    - name: Debian, Install a list of packages
+      apt:
+        name:
+          - bash-completion 
+          - vim 
+          - dbus 
+          - fail2ban 
+          - nmon 
+          - man
+          - locate 
+          - lsof 
+          - bc 
+          - openconnect 
+          - lnav  
+          - screen 
+          - ipset 
+          - iprange 
+          - speedtest-cli 
+          - nano 
+        update_cache: true
+        state: latest 
+      when:
+      - ansible_distribution == "Debian" or ansible_distribution == 'Ubuntu'

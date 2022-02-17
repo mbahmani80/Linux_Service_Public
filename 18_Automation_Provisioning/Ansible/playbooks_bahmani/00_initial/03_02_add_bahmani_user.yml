@@ -1,0 +1,39 @@
+---
+- name:  Add the user 
+  hosts: allnew
+  become: yes
+  tasks:
+
+    - name: Ensure group "ssh" exists
+      group:
+        name:  ssh
+        state: present
+
+    - name: CentOS, Add the user 'bahmani' with a bash shell, appending the group 'wheel,ssh' to the user's groups
+      user:
+        name: bahmani 
+        comment: system admin user
+        shell: /bin/bash
+        uid: 1000
+        groups: wheel,ssh
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa
+      when:
+      - ansible_distribution == "CentOS"
+
+
+    - name: Debian, Add the user 'bahmani' with a bash shell, appending the group 'sudo,ssh,adm' to the user's groups
+      user:
+        name: bahmani 
+        comment: system admin user
+        shell: /bin/bash
+        uid: 1000
+        groups: sudo,ssh,adm 
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa
+      when:
+      - ansible_distribution == "Debian" or ansible_distribution == 'Ubuntu'

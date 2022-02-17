@@ -1,0 +1,29 @@
+#***********************************************************************
+#          FILES:
+#                   01_02_debian_ubuntu_update_cache2.yml
+#
+#          USAGE:
+#		    ansible-playbook -i hosts 01_02_debian_ubuntu_update_cache2.yml
+#		  or
+#		    ansible-playbook -i hosts 01_02_debian_ubuntu_update_cache2.yml -b
+#
+#    DESCRIPTION: Ansible playbook print OS release inforamtion
+#
+#        OPTIONS: ---
+#   REQUIREMENTS: Python3
+#           BUGS: ---
+#         AUTHOR: Mahdi Bahmani (www.itstorage.ir)
+#   ORGANIZATION: merdasco
+#        CREATED: 2020/03/24 23:49
+#    LAST EDITED: 2020/11/14 00:20
+#       REVISION: 1.1
+#***********************************************************************
+---
+- name: Update linux package management cache 
+  hosts: allnew
+  become: yes
+  tasks:
+    - name: Update apt repo and cache on all Debian/Ubuntu boxes 
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+      when:
+      - ansible_distribution == "Debian" or ansible_distribution == 'Ubuntu'

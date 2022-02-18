@@ -1,5 +1,5 @@
-# Linux_Service_Public
-01_Install_initial_Config
-02_NTP_SSH_Server/CentOS8
-04_Storage_Server/NFS/CentOS/7
-18_Automation_Provisioning/Ansible/playbooks_bahmani/00_initial
+# Linux and Unix in DataCenter Training
+
+Linux is one of the most stable operating systems in many datacenters. Learning Linux means a better career and better job opportunities. Administration, Integration, Advanced service implementation, and programming in Linux is what provided on this website for those who looking for useful documents in learning Linux.
+https://itstorage.net/index.php/ldce
+
